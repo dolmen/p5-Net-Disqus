@@ -6,7 +6,7 @@ use Data::Dumper;
 
 my $interfaces;
 my $fh = IO::File->new('./interfaces.json');
-{ 
+{
     local $/;
     $interfaces = <$fh>;
 }

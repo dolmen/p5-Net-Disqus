@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -T 
+#!/usr/bin/env perl -T
 
 use Test::More tests => 4;
 use Test::Exception;

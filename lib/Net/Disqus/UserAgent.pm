@@ -47,10 +47,10 @@ sub ua_key { return shift->{ua_key} }
 sub ua_class { return shift->{ua_class} }
 sub pass_content_as_is { return shift->{pass_content_as_is} }
 
-sub request { 
-    my $self = shift; 
-    my $method = shift; 
-    my $f = "tx_" . $self->ua_key; 
+sub request {
+    my $self = shift;
+    my $method = shift;
+    my $f = "tx_" . $self->ua_key;
     return $self->$f($method, @_);
 };
 
@@ -62,25 +62,25 @@ sub tx_mojo {
     my $rate = {};
 
     my $uri = Mojo::URL->new(
-        ($method eq 'get') 
+        ($method eq 'get')
             ?  sprintf('%s?%s', $url, join('&', map { sprintf('%s=%s', $_, $args{$_}) } (keys(%args))))
             : $url
         );
-    my $f = ($method eq 'get') 
-        ? 'get' 
+    my $f = ($method eq 'get')
+        ? 'get'
         : 'post_form';
     my @fa = ($uri);
     push(@fa, { %args }) if($method eq 'post');
 
     my $res = $self->ua->$f(@fa)->res;
-    die Net::Disqus::Exception->new({ code => 500, text => 'Did not receive a JSON response'}) if( 
-        ($res->headers->content_type && $res->headers->content_type ne 'application/json') && 
+    die Net::Disqus::Exception->new({ code => 500, text => 'Did not receive a JSON response'}) if(
+        ($res->headers->content_type && $res->headers->content_type ne 'application/json') &&
         !$self->pass_content_as_is
         );
 
     $rate->{$_} = $res->headers->to_hash->{$_} || 0 for(qw(X-Ratelimit-Remaining X-Ratelimit-Limit X-Ratelimit-Reset));
     my @ret = (
-        ($self->pass_content_as_is) ? $res->body : $res->json, 
+        ($self->pass_content_as_is) ? $res->body : $res->json,
         $rate
     );
     return @ret;
@@ -90,7 +90,7 @@ sub json_decode {
     my $self = shift;
     my $str  = shift;
 
-    return ($self->ua_key eq 'mojo') 
+    return ($self->ua_key eq 'mojo')
         ? Mojo::JSON->decode($str)
         : JSON::PP::decode_json($str);
 }
@@ -132,7 +132,7 @@ __END__
 Net::Disqus::UserAgent - Wrapper around LWP::UserAgent or Mojo::UserAgent
 
 =head1 SYNOPSIS
-    
+
     # Do not use this module directly, it's full of little internal tidbits for
     # Net::Disqus, this is just here as an example
 
@@ -142,7 +142,7 @@ Net::Disqus::UserAgent - Wrapper around LWP::UserAgent or Mojo::UserAgent
 =head1 OBJECT METHODS
 
 =head2 new(%options)
-    
+
 Creates a new Net::Disqus::UserAgent object. This is usually done by L<Net::Disqus>, but the options below are valid to pass to the 'ua_args' option in the constructor for L<Net::Disqus>.
 
     forcelwp            (optional)  When set to a true value, will always use LWP::UserAgent even if Mojo::UserAgent is available

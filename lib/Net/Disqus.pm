@@ -53,28 +53,28 @@ sub rate_limit_resets_in {
     my $self = shift;
     my $now = time();
 
-    return ($now > $self->rate_limit_reset) 
-        ? undef 
+    return ($now > $self->rate_limit_reset)
+        ? undef
         : $self->rate_limit_reset - $now;
 }
 
-sub rate_limit_wait {   
+sub rate_limit_wait {
     my $self = shift;
     my $now = time();
     my $reset = $self->rate_limit_reset || 0;
 
-    return undef unless($reset > 0); 
+    return undef unless($reset > 0);
     return undef if($now > $reset);
 
     my $diff = $reset - $now;
     my $remaining = $self->rate_limit_remaining;
 
     return undef if($diff == 0 || $remaining == 0);
-    
+
     # we can do X requests every Y seconds to fill it up right
     # to the reset time
     my $wait = int($diff/$remaining);
-    $wait-- if($wait * $remaining > $diff); 
+    $wait-- if($wait * $remaining > $diff);
     return $wait;
 }
 
@@ -94,7 +94,7 @@ sub _mk_request {
     }
     $args{'api_secret'} = $self->api_secret;
 
-    # and there we are. 
+    # and there we are.
     my ($json, $rate) = $self->ua->request($method, $url, %args);
     die Net::Disqus::Exception->new({ code => $json->{code}, text => $json->{response}}) if(!$self->pass_api_errors && $json->{code} != 0);
 
@@ -116,7 +116,7 @@ sub AUTOLOAD {
     $self->path($self->path . '/' . $fragment);
     if($self->fragment->{$fragment}) {
         $self->fragment($self->fragment->{$fragment});
-        return ($self->fragment->{method}) 
+        return ($self->fragment->{method})
             ? $self->_mk_request(@_)
             : $self;
     } else {
@@ -125,7 +125,7 @@ sub AUTOLOAD {
         die Net::Disqus::Exception->new({ code => 500, text => "No such API endpoint"});
     }
 }
-        
+
 1;
 __END__
 =head1 NAME
@@ -145,7 +145,7 @@ Net::Disqus - Disqus.com API access
 =head1 OBJECT METHODS
 
 =head2 new(%options)
-    
+
 Creates a new Net::Disqus object. Arguments that can be passed to the constructor:
 
     api_secret      (REQUIRED)  Your Disqus API secret
@@ -182,11 +182,11 @@ sleep forever.
             my $reactions = $disqus->reactions->list(forum => 'mysite');
             my $wait = $diqus->rate_limit_wait;
             ...
-            sleep($wait || 60); 
+            sleep($wait || 60);
         }
 
 =head2 fetch(url, %args)
-   
+
 Returns the result from an API call. Pass the following arguments:
 
     url     (REQUIRED)  The url to call on the Disqus API
@@ -200,14 +200,14 @@ This method will use the interfaces.json file to check whether the endpoint you 
 You can call API methods either by their full URL:
 
     $disqus->fetch('/reactions/list', forum => 'foo')
-    
+
 Or you can get the same result like this:
 
     $disqus->reactions->list(forum => 'foo');
 
 Use whatever you're more comfortable with.
 
-For a list of API methods and their arguments, please see L<http://disqus.com/api/docs/>. 
+For a list of API methods and their arguments, please see L<http://disqus.com/api/docs/>.
 
 All API calls will return a hash reference containing at the very least a 'code' and a 'response' key. Use the API documentation or API console to find out what exactly is returned.
 
