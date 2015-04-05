@@ -29,3 +29,5 @@ while(<$fh>) {
 $fh->close();
 $out->print('sub INTERFACES {+', Dumper($json), "}\n\n1;\n");
 $out->close();
+
+system $^X $^X, '-c', '../lib/Net/Disqus/Interfaces.pm';
