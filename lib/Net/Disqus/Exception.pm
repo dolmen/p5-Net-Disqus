@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Net::Disqus::Exception;
-use base 'Class::Accessor';
+use parent 'Class::Accessor';
 use overload '""' => \&overload_text;
 __PACKAGE__->mk_accessors(qw(code text));
 

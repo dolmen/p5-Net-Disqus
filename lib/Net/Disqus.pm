@@ -5,7 +5,7 @@ use Try::Tiny;
 use Net::Disqus::UserAgent;
 use Net::Disqus::Interfaces;
 use Net::Disqus::Exception;
-use base 'Class::Accessor';
+use parent 'Class::Accessor';
 
 __PACKAGE__->mk_ro_accessors(qw(api_key api_secret api_url ua pass_api_errors));
 __PACKAGE__->mk_accessors(qw(interfaces rate_limit rate_limit_remaining rate_limit_reset fragment path));
