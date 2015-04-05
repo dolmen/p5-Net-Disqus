@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use strict;
 use IO::File;
 use JSON::XS;
@@ -17,6 +17,9 @@ my $json = decode_json($interfaces);
 $Data::Dumper::Indent = 0;
 $Data::Dumper::Terse = 1;
 $Data::Dumper::Deepcopy = 1;
+$Data::Dumper::Purity = 0;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Quotekeys = 0;
 
 $fh = IO::File->new('./Interfaces.pm-template');
 my $out = IO::File->new('>../lib/Net/Disqus/Interfaces.pm');
@@ -24,5 +27,5 @@ while(<$fh>) {
     $out->print($_);
 }
 $fh->close();
-$out->print('sub INTERFACES { return ', Dumper($json), "; }\n\n1;\n");
+$out->print('sub INTERFACES {+', Dumper($json), "}\n\n1;\n");
 $out->close();
